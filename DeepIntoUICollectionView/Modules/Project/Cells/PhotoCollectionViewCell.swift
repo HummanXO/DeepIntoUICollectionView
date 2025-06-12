@@ -1,32 +1,35 @@
 //
-//  PhotoCell.swift
+//  PhotoCollectionViewCell.swift
 //  DeepIntoUICollectionView
 //
-//  Created by Aleksandr on 11.06.2025.
+//  Created by Aleksandr on 12.06.2025.
 //
 
 import UIKit
 import SkeletonView
 
-class PhotoCell: UICollectionViewCell {
-    
+class PhotoCollectionViewCell: UICollectionViewCell {
+    // MARK: - Static Properties
+    static let reuseIdentifier = "PhotoCollectionViewCell"
     private static let imageCache = NSCache<NSString, UIImage>()
     
+    // MARK: - UIElements
     let imageView = UIImageView()
     let nameLabel = UILabel()
     let altDescriptionLabel = UILabel()
     let likesLabel = UILabel()
     
+    // MARK: - Init
     override init(frame: CGRect) {
         super.init(frame: frame)
-        setupImage()
-        setupDescriptionLabels()
+        setupView()
+        setupImageView()
+        setupDescription()
         setupConstraints()
     }
     
     override func prepareForReuse() {
         super.prepareForReuse()
-        imageView.hideSkeleton()
         imageView.image = nil
     }
     
@@ -34,39 +37,40 @@ class PhotoCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    private func setupDescriptionLabels() {
-        nameLabel.font = .systemFont(ofSize: 14, weight: .medium)
-        nameLabel.textColor = .label
-        nameLabel.numberOfLines = 1
-        
-        altDescriptionLabel.font = .systemFont(ofSize: 12, weight: .regular)
-        altDescriptionLabel.textColor = .secondaryLabel
-        altDescriptionLabel.numberOfLines = 2
-        altDescriptionLabel.lineBreakMode = .byTruncatingTail
-        
-        likesLabel.font = .systemFont(ofSize: 12, weight: .regular)
-        likesLabel.textColor = .secondaryLabel
-        likesLabel.numberOfLines = 1
-    }
+    // MARK: - SetupUI
     
-    private func setupImage() {
-        contentView.isSkeletonable = true
-        imageView.isSkeletonable = true
-        
-        imageView.contentMode = .scaleAspectFill
-        imageView.clipsToBounds = true
-        imageView.image = UIImage(systemName: "photo")
-    }
-    
-    private func setupConstraints() {
-        contentView.backgroundColor = .white
+    private func setupView() {
         contentView.layer.cornerRadius = 12
+        contentView.backgroundColor = .white
         contentView.layer.masksToBounds = false
         contentView.layer.shadowColor = UIColor.black.cgColor
         contentView.layer.shadowOpacity = 0.1
+        contentView.layer.shadowRadius = 3
         contentView.layer.shadowOffset = CGSize(width: 0, height: 2)
-        contentView.layer.shadowRadius = 4
+        contentView.isSkeletonable = true
+    }
+    
+    private func setupImageView() {
+        imageView.contentMode = .scaleAspectFill
+        imageView.clipsToBounds = true
+        imageView.layer.cornerRadius = 8
+        imageView.backgroundColor = .secondarySystemBackground
+        imageView.isSkeletonable = true
+    }
+    
+    private func setupDescription() {
+        nameLabel.font = .systemFont(ofSize: 14, weight: .medium)
+        nameLabel.numberOfLines = 1
         
+        altDescriptionLabel.font = .preferredFont(forTextStyle: .caption1)
+        altDescriptionLabel.numberOfLines = 2
+        altDescriptionLabel.lineBreakMode = .byTruncatingTail
+        
+        likesLabel.font = .preferredFont(forTextStyle: .caption1)
+        likesLabel.numberOfLines = 1
+    }
+    
+    private func setupConstraints() {
         [imageView, nameLabel, altDescriptionLabel, likesLabel].forEach {
             contentView.addSubview($0)
             $0.translatesAutoresizingMaskIntoConstraints = false
@@ -76,7 +80,7 @@ class PhotoCell: UICollectionViewCell {
             imageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10),
             imageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 10),
             imageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -10),
-            imageView.heightAnchor.constraint(equalToConstant: 120),
+            imageView.heightAnchor.constraint(equalToConstant: 160),
             
             nameLabel.topAnchor.constraint(equalTo: imageView.bottomAnchor, constant: 8),
             nameLabel.leadingAnchor.constraint(equalTo: imageView.leadingAnchor),
@@ -93,33 +97,43 @@ class PhotoCell: UICollectionViewCell {
         ])
     }
     
-    func configure(with welcome: Welcome) {
-        nameLabel.text = welcome.name
-        altDescriptionLabel.text = welcome.altDescription
-        likesLabel.text = "❤️: \(welcome.likes)"
-        
+    // MARK: - Configure
+    
+    func configure(with photo: Photo) {
         imageView.image = nil
+        nameLabel.text = photo.name
+        altDescriptionLabel.text = photo.altDescription
+        likesLabel.text = "❤️: \(photo.likes)"
         
-        if let cachedImage = Self.imageCache.object(forKey: welcome.url as NSString) {
-            imageView.image = cachedImage
-            return
-        }
-
-        guard let url = URL(string: welcome.url) else { return }
-
-        imageView.showAnimatedGradientSkeleton()
+        guard
+            let url = URL(string: photo.urls.small)
+        else { return }
+        
+//        if let cachedImage = Self.imageCache.object(forKey: photo.urls.small as NSString) {
+//            imageView.image = cachedImage
+//            return
+//        }
+        
+        startSkeletonAnimation()
         
         URLSession.shared.dataTask(with: url) { [weak self] data, _, error in
-            guard let self = self, let data = data, error == nil,
-                  let image = UIImage(data: data) else { return }
-
-            Self.imageCache.setObject(image, forKey: welcome.url as NSString)
-
+            guard let self = self else { return }
+            
+            if let error = error {
+                print("Error downloading image: \(error)")
+                return
+            }
+            
+            guard let data = data else { return }
+            
+            guard let image = UIImage(data: data) else { return }
+            
+//            Self.imageCache.setObject(image, forKey: photo.urls.small as NSString)
+            
             DispatchQueue.main.async {
                 self.imageView.image = image
-                self.imageView.hideSkeleton()
+                self.hideSkeleton()
             }
         }.resume()
     }
-    
 }

@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		1FB245D42DF98C0D00B6ECB9 /* SkeletonView in Frameworks */ = {isa = PBXBuildFile; productRef = 1FB245D32DF98C0D00B6ECB9 /* SkeletonView */; };
+		1FB245DF2DFABE9300B6ECB9 /* OptionallyDecodable in Frameworks */ = {isa = PBXBuildFile; productRef = 1FB245DE2DFABE9300B6ECB9 /* OptionallyDecodable */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -41,6 +42,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				1FB245D42DF98C0D00B6ECB9 /* SkeletonView in Frameworks */,
+				1FB245DF2DFABE9300B6ECB9 /* OptionallyDecodable in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -85,6 +87,7 @@
 			name = DeepIntoUICollectionView;
 			packageProductDependencies = (
 				1FB245D32DF98C0D00B6ECB9 /* SkeletonView */,
+				1FB245DE2DFABE9300B6ECB9 /* OptionallyDecodable */,
 			);
 			productName = DeepIntoUICollectionView;
 			productReference = 1FA76A482DF31A4500FC411B /* DeepIntoUICollectionView.app */;
@@ -116,6 +119,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				1FB245D22DF98C0D00B6ECB9 /* XCRemoteSwiftPackageReference "SkeletonView" */,
+				1FB245DD2DFABE9300B6ECB9 /* XCRemoteSwiftPackageReference "OptionallyDecodable" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 1FA76A492DF31A4500FC411B /* Products */;
@@ -382,6 +386,14 @@
 				minimumVersion = 1.31.0;
 			};
 		};
+		1FB245DD2DFABE9300B6ECB9 /* XCRemoteSwiftPackageReference "OptionallyDecodable" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/idrougge/OptionallyDecodable";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.2.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -389,6 +401,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 1FB245D22DF98C0D00B6ECB9 /* XCRemoteSwiftPackageReference "SkeletonView" */;
 			productName = SkeletonView;
+		};
+		1FB245DE2DFABE9300B6ECB9 /* OptionallyDecodable */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 1FB245DD2DFABE9300B6ECB9 /* XCRemoteSwiftPackageReference "OptionallyDecodable" */;
+			productName = OptionallyDecodable;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
